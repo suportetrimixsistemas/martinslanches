@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Martins Lanches</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Martins Lanches</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showHome()">
+                            <i class="fas fa-home"></i> Home
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showProducts()">
+                            <i class="fas fa-box"></i> Produtos
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showSales()">
+                            <i class="fas fa-cash-register"></i> Vendas
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showBilling()">
+                            <i class="fas fa-file-invoice-dollar"></i> Faturamento
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+
+<div class="container mt-3" id="home">
+    <h1>Bem-vindo ao Sistema de Gerenciamento de Vendas</h1>
+</div>
+
+<div class="container mt-3" id="products" style="display:none;">
+    <h1>Gerenciar Produtos</h1>
+    <button class="btn btn-primary" onclick="openProductModal()">Cadastrar Produto</button>
+    <input type="text" id="searchInput" class="form-control mt-3" placeholder="Buscar produto..." onkeyup="searchProducts()">
+    <table class="table mt-3">
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Preço</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody id="productTable"></tbody>
+    </table>
+</div>
+
+<div class="container mt-3" id="sales" style="display:none;">
+    <h1>Gerenciar Vendas</h1>
+    <button class="btn btn-primary" onclick="openSaleModal()">Registrar Venda</button>
+    <table class="table mt-3">
+        <thead>
+            <tr>
+                <th>Mesa</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody id="salesTable"></tbody>
+    </table>
+</div>
+
+<div class="container mt-3" id="billing" style="display:none;">
+    <h1>Faturamento</h1>
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <input type="text" id="billingSearchInput" class="form-control" placeholder="Buscar por mesa ou data..." onkeyup="searchBilling()">
+        </div>
+        <div class="col-md-6">
+            <input type="date" id="billingDateInput" class="form-control" onchange="searchBilling()" placeholder="Filtrar por data...">
+        </div>
+    </div>
+    <button class="btn btn-success mt-3" onclick="downloadCSV()"><i class="fas fa-file-csv"></i> Baixar Excel</button>
+    
+    <table class="table mt-3">
+        <thead>
+            <tr>
+                <th>Mesa</th>
+                <th>Total</th>
+                <th>Forma de Pagamento</th>
+            </tr>
+        </thead>
+        <tbody id="billingTable"></tbody>
+    </table>
+
+    <div class="mt-3">
+        <h5>Faturamento Total: R$<span id="totalBilling"></span></h5>
+    </div>
+</div>
+
+
+<!-- Modais de Cadastro e Visualização -->
+
+<!-- Modal Produto -->
+<div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="productModalLabel">Cadastrar Produto</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="productForm">
+                    <div class="mb-3">
+                        <label for="productName" class="form-label">Nome do Produto</label>
+                        <input type="text" class="form-control" id="productName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="productPrice" class="form-label">Preço</label>
+                        <input type="number" class="form-control" id="productPrice" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Venda -->
+<div class="modal fade" id="saleModal" tabindex="-1" aria-labelledby="saleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="saleModalLabel">Registrar Venda</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="saleForm">
+                    <div class="mb-3">
+                        <label for="tableNumber" class="form-label">Número da Mesa</label>
+                        <input type="number" class="form-control" id="tableNumber" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Produtos da Venda -->
+<div class="modal fade" id="saleProductsModal" tabindex="-1" aria-labelledby="saleProductsModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="saleProductsModalLabel">Selecionar Produtos</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="saleProductsForm">
+                    <div id="productSelection" class="mb-3"></div>
+                    <button type="submit" class="btn btn-primary">Adicionar Produtos</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Troco -->
+<div class="modal fade" id="changeModal" tabindex="-1" aria-labelledby="changeModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="changeModalLabel">Calcular Troco</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="changeForm">
+                    <div class="mb-3">
+                        <label for="givenAmount" class="form-label">Valor Recebido</label>
+                        <input type="number" class="form-control" id="givenAmount" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Calcular Troco</button>
+                </form>
+                <div id="changeResult" class="mt-3" style="display:none;">
+                    <p>Troco: R$<span id="changeValue"></span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Visualização da Venda -->
+<div class="modal fade" id="viewSaleModal" tabindex="-1" aria-labelledby="viewSaleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="viewSaleModalLabel">Visualizar Venda</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <h5>Produtos:</h5>
+                <ul id="saleProductsList"></ul>
+                <h5>Total: R$<span id="saleTotalValue"></span></h5>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Forma de Pagamento -->
+<div class="modal fade" id="paymentModal" tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="paymentModalLabel">Selecionar Forma de Pagamento</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="paymentForm">
+                    <div class="mb-3">
+                        <label for="paymentMethod" class="form-label">Forma de Pagamento</label>
+                        <select class="form-select" id="paymentMethod" required>
+                            <option value="Dinheiro">Dinheiro</option>
+                            <option value="Cartão de Crédito">Cartão de Crédito</option>
+                            <option value="Cartão de Débito">Cartão de Débito</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Confirmar Pagamento</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+
+<script>
+
+
+
+$(document).ready(function () {
+    let products = [];
+    let sales = [];
+    let billings = [];
+
+    window.showHome = function () {
+        $('#home').show();
+        $('#products').hide();
+        $('#sales').hide();
+        $('#billing').hide();
+    };
+
+    window.showProducts = function () {
+        $('#home').hide();
+        $('#products').show();
+        $('#sales').hide();
+        $('#billing').hide();
+    };
+
+    window.showSales = function () {
+        $('#home').hide();
+        $('#products').hide();
+        $('#sales').show();
+        $('#billing').hide();
+    };
+
+    window.showBilling = function () {
+        $('#home').hide();
+        $('#products').hide();
+        $('#sales').hide();
+        $('#billing').show();
+    };
+
+    window.openProductModal = function () {
+        $('#productModal').modal('show');
+    };
+
+    window.openSaleModal = function () {
+        $('#saleModal').modal('show');
+    };
+
+    window.openSaleProductsModal = function () {
+        $('#saleProductsModal').modal('show');
+    };
+
+    window.openChangeModal = function () {
+        $('#changeModal').modal('show');
+    };
+
+    window.openViewSaleModal = function () {
+        $('#viewSaleModal').modal('show');
+    };
+
+    window.openPaymentModal = function () {
+        $('#paymentModal').modal('show');
+    };
+
+    $('#productForm').submit(function (e) {
+    e.preventDefault();
+    const name = $('#productName').val();
+    const price = parseFloat($('#productPrice').val());
+
+    // Verifica se o produto já existe pelo nome
+    const existingProduct = products.find(product => product.name.toLowerCase() === name.toLowerCase());
+    if (existingProduct) {
+        alert('Este produto já está cadastrado!');
+        return;
+    }
+
+    products.push({ name, price });
+    $('#productModal').modal('hide');
+    renderProducts();
+});
+
+
+    $('#saleForm').submit(function (e) {
+        e.preventDefault();
+        const tableNumber = $('#tableNumber').val();
+        sales.push({ tableNumber, products: [], total: 0, paymentMethod: '' });
+        $('#saleModal').modal('hide');
+        renderSales();
+    });
+
+    $('#saleProductsForm').submit(function (e) {
+        e.preventDefault();
+        const selectedProducts = [];
+        $('#productSelection input:checked').each(function () {
+            const productIndex = $(this).val();
+            selectedProducts.push(products[productIndex]);
+        });
+        const saleIndex = $('#saleProductsForm').data('saleIndex');
+        sales[saleIndex].products = selectedProducts;
+        sales[saleIndex].total = selectedProducts.reduce((acc, product) => acc + product.price, 0);
+        $('#saleProductsModal').modal('hide');
+        renderSales();
+    });
+
+    $('#paymentForm').submit(function (e) {
+        e.preventDefault();
+        const paymentMethod = $('#paymentMethod').val();
+        const saleIndex = $('#paymentForm').data('saleIndex');
+        sales[saleIndex].paymentMethod = paymentMethod;
+        billings.push(sales[saleIndex]);
+        sales.splice(saleIndex, 1);
+        $('#paymentModal').modal('hide');
+        renderSales();
+        renderBilling();
+    });
+
+    $('#changeForm').submit(function (e) {
+        e.preventDefault();
+        const givenAmount = parseFloat($('#givenAmount').val());
+        const saleIndex = $('#changeForm').data('saleIndex');
+        const saleTotal = sales[saleIndex].total;
+        const change = givenAmount - saleTotal;
+        $('#changeValue').text(change.toFixed(2));
+        $('#changeResult').show();
+    });
+
+    window.editProduct = function (index) {
+        const product = products[index];
+        $('#productName').val(product.name);
+        $('#productPrice').val(product.price);
+        $('#productForm').off('submit').submit(function (e) {
+            e.preventDefault();
+            products[index] = {
+                name: $('#productName').val(),
+                price: parseFloat($('#productPrice').val())
+            };
+            $('#productModal').modal('hide');
+            renderProducts();
+            $('#productForm').off('submit').submit(function (e) {
+                e.preventDefault();
+                const name = $('#productName').val();
+                const price = parseFloat($('#productPrice').val());
+                products.push({ name, price });
+                $('#productModal').modal('hide');
+                renderProducts();
+            });
+        });
+        $('#productModal').modal('show');
+    };
+
+    window.deleteProduct = function (index) {
+        products.splice(index, 1);
+        renderProducts();
+    };
+
+    window.viewSale = function (index) {
+        const sale = sales[index];
+        const productList = sale.products.map(product => `<li>${product.name} - R$${product.price.toFixed(2)}</li>`).join('');
+        $('#saleProductsList').html(productList);
+        $('#saleTotalValue').text(sale.total.toFixed(2));
+        $('#viewSaleModal').modal('show');
+    };
+
+    window.selectSaleProducts = function (index) {
+        const productSelection = products.map((product, productIndex) => `
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="${productIndex}" id="product-${productIndex}">
+                <label class="form-check-label" for="product-${productIndex}">
+                    ${product.name} - R$${product.price.toFixed(2)}
+                </label>
+            </div>
+        `).join('');
+        $('#productSelection').html(productSelection);
+        $('#saleProductsForm').data('saleIndex', index);
+        $('#saleProductsModal').modal('show');
+    };
+
+    window.finalizeSale = function (index) {
+        $('#paymentForm').data('saleIndex', index);
+        $('#paymentModal').modal('show');
+    };
+
+    window.calculateChange = function (index) {
+        $('#changeForm').data('saleIndex', index);
+        $('#changeModal').modal('show');
+    };
+
+    window.searchProducts = function () {
+        const searchInput = $('#searchInput').val().toLowerCase();
+        const filteredProducts = products.filter(product => product.name.toLowerCase().includes(searchInput));
+        renderProducts(filteredProducts);
+    };
+
+    window.searchBilling = function () {
+        const searchInput = $('#billingSearchInput').val().toLowerCase();
+        const filteredBillings = billings.filter(billing => billing.tableNumber.toLowerCase().includes(searchInput));
+        renderBilling(filteredBillings);
+    };
+
+    function renderProducts(productList = products) {
+        $('#productTable').html(productList.map((product, index) => `
+            <tr>
+                <td>${product.name}</td>
+                <td>R$${product.price.toFixed(2)}</td>
+                <td>
+                    <button class="btn btn-sm btn-info" onclick="editProduct(${index})"><i class="fas fa-edit"></i></button>
+                    <button class="btn btn-sm btn-danger" onclick="deleteProduct(${index})"><i class="fas fa-trash-alt"></i></button>
+                </td>
+            </tr>
+        `).join(''));
+    }
+
+    function renderSales() {
+        $('#salesTable').html(sales.map((sale, index) => `
+            <tr>
+                <td>${sale.tableNumber}</td>
+                <td>
+                    <button class="btn btn-sm btn-primary" onclick="selectSaleProducts(${index})"><i class="fas fa-cart-plus"></i></button>
+                    <button class="btn btn-sm btn-success" onclick="finalizeSale(${index})"><i class="fas fa-money-bill-wave"></i></button>
+                    <button class="btn btn-sm btn-info" onclick="viewSale(${index})"><i class="fas fa-eye"></i></button>
+                    <button class="btn btn-sm btn-warning" onclick="calculateChange(${index})"><i class="fas fa-calculator"></i></button>
+                </td>
+            </tr>
+        `).join(''));
+    }
+
+    function renderBilling(billingList = billings) {
+        $('#billingTable').html(billingList.map(billing => `
+            <tr>
+                <td>${billing.tableNumber}</td>
+                <td>R$${billing.total.toFixed(2)}</td>
+                <td>${billing.paymentMethod}</td>
+            </tr>
+        `).join(''));
+    }
+
+    window.downloadCSV = function () {
+        const csvContent = 'data:text/csv;charset=utf-8,'
+            + 'Mesa,Total,Forma de Pagamento\n'
+            + billings.map(billing => `${billing.tableNumber},${billing.total.toFixed(2)},${billing.paymentMethod}`).join('\n');
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement('a');
+        link.setAttribute('href', encodedUri);
+        link.setAttribute('download', 'faturamento.csv');
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
+    window.downloadPDF = function () {
+    const pdfContent = `
+        <h1>Faturamento</h1>
+        <table>
+            <tr>
+                <th>Mesa</th>
+                <th>Total</th>
+                <th>Forma de Pagamento</th>
+            </tr>
+            ${billings.map(billing => `
+                <tr>
+                    <td>${billing.tableNumber}</td>
+                    <td>R$${billing.total.toFixed(2)}</td>
+                    <td>${billing.paymentMethod}</td>
+                </tr>
+            `).join('')}
+        </table>
+    `;
+
+    // Create a blob from the PDF content
+    const blob = new Blob([pdfContent], { type: 'application/pdf' });
+    const url = URL.createObjectURL(blob);
+
+    // Open the PDF in a new tab
+    const newTab = window.open(url, '_blank');
+    if (newTab === null) {
+        alert('Bloqueadores de pop-up podem ter impedido a abertura do PDF. Verifique as configurações do seu navegador.');
+    }
+};
+
+});
+</script>
+</body>
+</html>
